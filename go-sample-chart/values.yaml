@@ -6,12 +6,12 @@ image:
   tag: local
   pullPolicy: IfNotPresent
 service:
-  name: node-service
+  name: go-service
   type: NodePort
-  externalPort: 30130
-  internalPort: 3030
+  externalPort: 30180
+  internalPort: 8080
   protocol: TCP
 deployment:
-  name: node-deployment
+  name: go-deployment
 pod:
-  name: node-container
+  name: go-container
