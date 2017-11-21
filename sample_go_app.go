@@ -111,7 +111,7 @@ func (board *Board) Equals(test *Board) bool {
 }
 
 func main() {
-  board := EmptyBoard(40,15)
+  board := EmptyBoard(15,15)
   board.RandomizePopulation(4)
   http.Handle("/", board)
   http.ListenAndServe(":8080", nil)
