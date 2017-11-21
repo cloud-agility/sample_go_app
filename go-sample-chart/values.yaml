@@ -1,0 +1,17 @@
+replicaCount: 1
+minReadySeconds: 1
+image:
+  name: go-sample
+  repository: mycluster.icp:8500/default
+  tag: local
+  pullPolicy: IfNotPresent
+service:
+  name: node-service
+  type: NodePort
+  externalPort: 30130
+  internalPort: 3030
+  protocol: TCP
+deployment:
+  name: node-deployment
+pod:
+  name: node-container

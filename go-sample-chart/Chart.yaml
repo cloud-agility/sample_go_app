@@ -1,0 +1,6 @@
+name: go-sample-chart
+version: 0.1.0
+description: The sample node microservice.
+sources:
+  - https://github.com/cloud-agility/sample_go_app
+appVersion: v1
