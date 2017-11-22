@@ -32,7 +32,7 @@ func anEmptyBoard() error {
 }
 
 func iEvolveIt() error {
-  board = board.Evolve()
+  board.Evolve()
 	return nil
 }
 
