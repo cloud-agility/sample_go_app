@@ -9,8 +9,6 @@ import (
   "net/http"
 )
 
-var CLEARSCREEN string = "\033[H\033[2J"
-
 type Board struct {
 	cells [][]bool
 	x, y int
@@ -59,7 +57,7 @@ func (board *Board) EvolveCell(x, y int) bool {
 func NotThisCell(x, y int) bool {
   return (x != 0 || y != 0 )
 }
-
+/*
 func (board *Board) Evolve() *Board {
   nextgen := EmptyBoard(board.x, board.y)
 	for y := 0; y < board.y; y++ {
@@ -68,6 +66,19 @@ func (board *Board) Evolve() *Board {
 		}
 	}
 	return &Board{cells: nextgen.cells, x: nextgen.x, y: nextgen.y}
+}
+*/
+
+func (board *Board) Evolve() {
+  nextgen := EmptyBoard(board.x, board.y)
+	for y := 0; y < board.y; y++ {
+		for x := 0; x < board.x; x++ {
+			nextgen.Set(x, y, board.EvolveCell(x, y))
+		}
+	}
+	board.x = nextgen.x
+  board.y = nextgen.y
+  board.cells = nextgen.cells
 }
 
 // called implicitly by Print()
@@ -88,8 +99,8 @@ func (board *Board) String() string {
 
 // ServeHTTP is called when board is used as the Handler for requests
 func (board *Board) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+  board.Evolve()
   fmt.Fprint(w, board)
-  board = board.Evolve()
 }
 
 
