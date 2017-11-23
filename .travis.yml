@@ -11,13 +11,16 @@ cache:
     - $HOME/.bluemix/plugins
     - $HOME/utilities-$UTILSVER
     - /usr/local/bin
-    
+
 # Get our utility functions for logging into the public cloud
 before_install:
-  - wget https://github.com/cloud-agility/utilities/archive/v$UTILSVER.tar.gz -O /tmp/utilities.tar.gz
-  - tar -xvf /tmp/utilities.tar.gz
+  - if [[ ! -d $PWD/utilities-$UTILSVER ]]; then
+      wget https://github.com/cloud-agility/utilities/archive/v$UTILSVER.tar.gz -O /tmp/utilities.tar.gz;
+      tar -xvf /tmp/utilities.tar.gz;
+      export PATH=$PATH:$PWD/utilities-$UTILSVER;
+    fi
   - curl -sL https://ibm.biz/idt-installer | bash
-  - export PATH=$PATH:$PWD/utilities-$UTILSVER
+
 
 # Run all tests in this directory recursively
 script:

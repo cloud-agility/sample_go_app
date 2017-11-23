@@ -1,5 +1,7 @@
 NAME		= go-sample
 
+PRODUCTION = production
+
 ifndef TAGS
 	TAGS	= local
 else
@@ -10,7 +12,7 @@ DOCKER_IMAGE	= $(NAME):$(TAGS)
 ifndef REGISTRY
 # use minikube by default
 	REGISTRY	= 192.168.99.100:32767/default
-	REGISTRY_SECRET = $(shell kubectl get secret | grep default | awk '{print $$1}')
+	REGISTRY_SECRET = $(shell kubectl get secret | grep default-token | awk '{print $$1}')
 endif
 
 ifndef RELEASE
@@ -61,9 +63,10 @@ endif
 
 .PHONY: namespace
 namespace:
-ifneq ($(NAMESPACE),"production")
-	echo "Creating namespace $(NAMESPACE) with registry secret $(REGISTRY_SECRET)"
+	echo "Creating namespace $(NAMESPACE) if it doesn't already exist"
 	$(DEPLOY) upgrade $(NAMESPACE) namespace-chart --install
+ifneq ($(NAMESPACE),$(PRODUCTION))
+	echo "Patching registry secret $(REGISTRY_SECRET) for namespace $(NAMESPACE)"
 	kubectl get secret $(REGISTRY_SECRET) -o json --namespace default | sed 's/"namespace": "default"/"namespace": "$(NAMESPACE)"/g' | kubectl create -f -
 	kubectl patch sa default -p '{"imagePullSecrets": [{"name": "$(REGISTRY_SECRET)"}]}' --namespace $(NAMESPACE)
 endif
