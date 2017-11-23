@@ -50,22 +50,20 @@ unittest:
 
 .PHONY: push
 push:
-ifneq ($(TAGS),$(RELEASE))
-	echo ">> using $(REGISTRY) registry"
-	$(TAG) $(DOCKER_IMAGE) $(REGISTRY)/$(DOCKER_IMAGE)
-	$(PUSH) $(REGISTRY)/$(DOCKER_IMAGE)
-else
-	echo ">> pushing release $(RELEASE) image to docker hub as $(DOCKER_IMAGE)"
+ifeq ($(TAGS),$(RELEASE))
+	echo ">> pushing release $(RELEASE) image to docker hub as $(REGISTRY)/$(DOCKER_IMAGE)"
 	$(LOGIN) -u="$(DOCKER_USERNAME)" -p="$(DOCKER_PASSWORD)"
+else
+	echo ">> using $(REGISTRY) registry"
+endif
 	$(TAG) $(DOCKER_IMAGE) $(REGISTRY)/$(DOCKER_IMAGE)
 	$(PUSH) $(REGISTRY)/$(DOCKER_IMAGE)
-endif
 
 .PHONY: namespace
 namespace:
 ifneq ($(NAMESPACE),"production")
 	echo "Creating namespace $(NAMESPACE) with registry secret $(REGISTRY_SECRET)"
-	kubectl create ns $(NAMESPACE)
+	$(DEPLOY) upgrade $(NAMESPACE) namespace-chart --install
 	kubectl get secret $(REGISTRY_SECRET) -o json --namespace default | sed 's/"namespace": "default"/"namespace": "$(NAMESPACE)"/g' | kubectl create -f -
 	kubectl patch sa default -p '{"imagePullSecrets": [{"name": "$(REGISTRY_SECRET)"}]}' --namespace $(NAMESPACE)
 endif
@@ -74,7 +72,7 @@ endif
 deploy: push namespace
 	echo ">> Use $(DEPLOY) to install $(NAME)-chart"
 	## Override the values.yaml with the target
-	$(DEPLOY) install $(NAME)-chart --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE) --name $(NAME) --wait
+	$(DEPLOY) upgrade $(NAME) $(NAME)-chart --install --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE)  --wait
 
 .PHONY: cleankube
 cleankube:
