@@ -1,4 +1,5 @@
 NAME		= go-sample
+
 ifndef TAGS
 	TAGS	= local
 else
@@ -17,6 +18,7 @@ ifndef RELEASE
 	NAMESPACE :=$(subst .,-,$(NAMESPACE))
 else
 	NAMESPACE = production
+	REGISTRY = cloudagility
 endif
 
 # COMMAND DEFINITIONS
@@ -55,7 +57,7 @@ ifneq ($(TAGS),$(RELEASE))
 else
 	echo ">> pushing release $(RELEASE) image to docker hub as $(DOCKER_IMAGE)"
 	$(LOGIN) -u="$(DOCKER_USERNAME)" -p="$(DOCKER_PASSWORD)"
-	$(PUSH) $(DOCKER_IMAGE)
+	$(PUSH) $(REGISTRY)/$(DOCKER_IMAGE)
 endif
 
 .PHONY: namespace
