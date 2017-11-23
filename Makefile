@@ -57,6 +57,7 @@ ifneq ($(TAGS),$(RELEASE))
 else
 	echo ">> pushing release $(RELEASE) image to docker hub as $(DOCKER_IMAGE)"
 	$(LOGIN) -u="$(DOCKER_USERNAME)" -p="$(DOCKER_PASSWORD)"
+	$(TAG) $(DOCKER_IMAGE) $(REGISTRY)/$(DOCKER_IMAGE)
 	$(PUSH) $(REGISTRY)/$(DOCKER_IMAGE)
 endif
 
