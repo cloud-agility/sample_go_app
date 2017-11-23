@@ -6,6 +6,12 @@ services:
 env:
   - TAGS=$TRAVIS_BRANCH; UTILSVER=0.1.5; RELEASE=$TRAVIS_TAG
 
+cache:
+  directories:
+    - $HOME/.bluemix/plugins
+    - $HOME/utilities-$UTILSVER
+    - /usr/local/bin
+    
 # Get our utility functions for logging into the public cloud
 before_install:
   - wget https://github.com/cloud-agility/utilities/archive/v$UTILSVER.tar.gz -O /tmp/utilities.tar.gz
