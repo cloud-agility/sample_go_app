@@ -67,7 +67,6 @@ namespace:
 	$(DEPLOY) upgrade $(NAMESPACE) namespace-chart --install
 ifneq ($(NAMESPACE),$(PRODUCTION))
 	echo "Patching registry secret $(REGISTRY_SECRET) for namespace $(NAMESPACE)"
-	kubectl get secret $(REGISTRY_SECRET) -o json --namespace default | sed 's/"namespace": "default"/"namespace": "$(NAMESPACE)"/g' | kubectl create -f -
 	kubectl patch sa default -p '{"imagePullSecrets": [{"name": "$(REGISTRY_SECRET)"}]}' --namespace $(NAMESPACE)
 endif
 
@@ -75,7 +74,7 @@ endif
 deploy: push namespace
 	echo ">> Use $(DEPLOY) to install $(NAME)-chart"
 	## Override the values.yaml with the target
-	$(DEPLOY) upgrade $(NAME) $(NAME)-chart --install --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE)  --wait
+	$(DEPLOY) upgrade $(NAME)-$(NAMESPACE) $(NAME)-chart --install --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE)  --wait
 
 .PHONY: cleankube
 cleankube:
